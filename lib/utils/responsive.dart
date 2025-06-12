@@ -20,7 +20,6 @@ class SizeConfig {
   }
 
   static bool isLandscape(BuildContext context) {
-    print('Orientation: ${MediaQuery.of(context).orientation}');
     return MediaQuery.of(context).orientation == Orientation.landscape;
   }
 

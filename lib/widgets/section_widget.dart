@@ -74,7 +74,9 @@ class SectionWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(SizeConfig.wp(2)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.amber[700]!.withOpacity(0.4),
+                        color: Colors.amber[700]!.withAlpha(
+                          (0.4 * 255).toInt(),
+                        ),
                         blurRadius: SizeConfig.wp(4),
                         spreadRadius: SizeConfig.wp(1),
                         offset: const Offset(0, 2),

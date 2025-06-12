@@ -19,13 +19,16 @@ class JellyButton extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(
-            colors: [color.withOpacity(0.9), color.withOpacity(0.6)],
+            colors: [
+              color.withAlpha((0.9 * 255).toInt()),
+              color.withAlpha((0.6 * 255).toInt()),
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.6),
+              color: color.withAlpha((0.6 * 255).toInt()),
               blurRadius: 12,
               spreadRadius: 1,
               offset: const Offset(0, 6),
