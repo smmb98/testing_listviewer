@@ -30,13 +30,14 @@ class SectionLoader extends ChangeNotifier {
 
     await Future.delayed(const Duration(seconds: 1)); // Simulated delay
 
-    final rand = Random();
+    // final rand = Random();
     for (int i = 0; i < 10; i++) {
       _sections.add(
         SectionModel(
           title: "Section ${loadedSections + 1}",
           color: Colors.primaries[loadedSections % Colors.primaries.length],
-          buttonCount: rand.nextInt(18) + 2,
+          buttonCount: 9,
+          // buttonCount: rand.nextInt(18) + 2,
         ),
       );
       loadedSections++;

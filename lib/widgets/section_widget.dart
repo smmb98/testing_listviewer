@@ -1,9 +1,12 @@
 import 'package:testing_listviewer/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/section_model.dart';
+import '../providers/button_state_provider.dart';
 import 'jelly_button.dart';
+import '../screens/stage_screen.dart';
 
-class SectionWidget extends StatelessWidget {
+class SectionWidget extends StatefulWidget {
   final SectionModel section;
   final int sectionIndex;
 
@@ -14,6 +17,34 @@ class SectionWidget extends StatelessWidget {
   });
 
   @override
+  State<SectionWidget> createState() => _SectionWidgetState();
+}
+
+class _SectionWidgetState extends State<SectionWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // Register the section's button count with the provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ButtonStateProvider>().setSectionButtonCount(
+            widget.sectionIndex,
+            widget.section.buttonCount,
+          );
+    });
+  }
+
+  void _navigateToStage(BuildContext context, int buttonIndex) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => StageScreen(
+          sectionIndex: widget.sectionIndex,
+          buttonIndex: buttonIndex,
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<Widget> buttons = [];
 
@@ -21,10 +52,11 @@ class SectionWidget extends StatelessWidget {
     final offsets = [0.0, 25.0, 40.0, 25.0, 0.0, -25.0, -40.0, -25.0];
     // final offsets = [0.0, 5.0, 8.0, 5.0, 0.0, -5.0, -8.0, -5.0]; // percentage
     final reverseOffsets = offsets.map((offset) => -offset).toList();
-    final adjustedOffsets = (sectionIndex % 2 == 1) ? reverseOffsets : offsets;
+    final adjustedOffsets =
+        (widget.sectionIndex % 2 == 1) ? reverseOffsets : offsets;
 
-    for (int i = 0; i < section.buttonCount; i++) {
-      double offsetPercent = (i == 0 || i == section.buttonCount - 1)
+    for (int i = 0; i < widget.section.buttonCount; i++) {
+      double offsetPercent = (i == 0 || i == widget.section.buttonCount - 1)
           ? 0
           : adjustedOffsets[i % adjustedOffsets.length];
 
@@ -38,7 +70,13 @@ class SectionWidget extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: SizeConfig.hp(2)),
           child: Align(
             alignment: Alignment(offsetPercent / 100, 0),
-            child: JellyButton(label: 'Item ${i + 1}', color: section.color),
+            child: JellyButton(
+              label: 'Item ${i + 1}',
+              color: widget.section.color,
+              sectionIndex: widget.sectionIndex,
+              buttonIndex: i,
+              onPressed: () => _navigateToStage(context, i),
+            ),
           ),
         ),
       );

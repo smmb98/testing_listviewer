@@ -49,7 +49,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
 
     if (currentOffset >= maxOffset - preloadOffset && !loader.isLoading) {
       _lastLoadTime = now;
-      loader.loadMoreSections();
+      // loader.loadMoreSections();
     }
   }
 
