@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:testing_listviewer/utils/responsive.dart';
 
 class JellyButton extends StatelessWidget {
   final String label;
@@ -13,8 +14,8 @@ class JellyButton extends StatelessWidget {
         border: Border.all(color: Colors.yellow, width: 1),
       ),
       child: Container(
-        width: 100,
-        height: 100,
+        width: SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11),
+        height: SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(

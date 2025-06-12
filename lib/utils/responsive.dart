@@ -19,6 +19,11 @@ class SizeConfig {
     blockHeight = screenHeight / 100;
   }
 
+  static bool isLandscape(BuildContext context) {
+    print('Orientation: ${MediaQuery.of(context).orientation}');
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
+
   static double wp(double percent) => blockWidth * percent;
   static double hp(double percent) => blockHeight * percent;
 

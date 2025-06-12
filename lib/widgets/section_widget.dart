@@ -54,20 +54,20 @@ class SectionWidget extends StatelessWidget {
               bottom: null,
               left: offsetPercent < 0
                   ? null
-                  : SizeConfig.wp(13), // Opposite side
-              right: offsetPercent > 0 ? null : SizeConfig.wp(13),
+                  : SizeConfig.wp(
+                      SizeConfig.isLandscape(context) ? 15 : 13,
+                    ), // Opposite side
+              right: offsetPercent > 0
+                  ? null
+                  : SizeConfig.wp(SizeConfig.isLandscape(context) ? 15 : 13),
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
                   width: SizeConfig.wp(
-                    MediaQuery.of(context).orientation == Orientation.landscape
-                        ? 20
-                        : 28,
+                    SizeConfig.isLandscape(context) ? 20 : 30,
                   ),
                   height: SizeConfig.wp(
-                    MediaQuery.of(context).orientation == Orientation.landscape
-                        ? 20
-                        : 28,
+                    SizeConfig.isLandscape(context) ? 20 : 30,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.amber[700],

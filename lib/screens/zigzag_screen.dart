@@ -48,9 +48,9 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final headerHeight = isLandscape ? SizeConfig.hp(20) : SizeConfig.hp(10);
+    final headerHeight = SizeConfig.hp(
+      SizeConfig.isLandscape(context) ? 20 : 10,
+    );
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -85,7 +85,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
                         maxHeight: headerHeight,
                         child: SectionHeader(
                           section: section,
-                          isLandscape: isLandscape,
+                          isLandscape: SizeConfig.isLandscape(context),
                         ),
                       ),
                     ),
