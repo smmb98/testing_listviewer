@@ -36,7 +36,7 @@ class SectionLoader extends ChangeNotifier {
         SectionModel(
           title: "Section ${loadedSections + 1}",
           color: Colors.primaries[loadedSections % Colors.primaries.length],
-          buttonCount: 9,
+          buttonCount: 5,
           // buttonCount: rand.nextInt(18) + 2,
         ),
       );

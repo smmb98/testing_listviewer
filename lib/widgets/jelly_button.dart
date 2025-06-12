@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:testing_listviewer/utils/responsive.dart';
 import 'package:provider/provider.dart';
 import '../providers/button_state_provider.dart';
+import 'package:testing_listviewer/utils/responsive.dart';
 
-class JellyButton extends StatelessWidget {
+class JellyButton extends StatefulWidget {
   final String label;
   final Color color;
   final int sectionIndex;
@@ -20,68 +20,172 @@ class JellyButton extends StatelessWidget {
   });
 
   @override
+  State<JellyButton> createState() => _JellyButtonState();
+}
+
+class _JellyButtonState extends State<JellyButton> {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) {
+    setState(() => _scale = 0.92);
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    setState(() => _scale = 1.0);
+    widget.onPressed?.call();
+  }
+
+  void _onTapCancel() => setState(() => _scale = 1.0);
+
+  @override
   Widget build(BuildContext context) {
+    final size = SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11);
+
     return Consumer<ButtonStateProvider>(
-      builder: (context, buttonStateProvider, child) {
-        final isEnabled =
-            buttonStateProvider.isButtonEnabled(sectionIndex, buttonIndex);
-        final isCompleted =
-            buttonStateProvider.isButtonCompleted(sectionIndex, buttonIndex);
+      builder: (context, buttonStateProvider, _) {
+        final isEnabled = buttonStateProvider.isButtonEnabled(
+            widget.sectionIndex, widget.buttonIndex);
+        final isCompleted = buttonStateProvider.isButtonCompleted(
+            widget.sectionIndex, widget.buttonIndex);
+
+        final Color base = isEnabled ? widget.color : Colors.grey;
 
         return GestureDetector(
-          onTap: isEnabled ? onPressed : null,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.yellow, width: 1),
-            ),
+          onTapDown: isEnabled ? _onTapDown : null,
+          onTapUp: isEnabled ? _onTapUp : null,
+          onTapCancel: isEnabled ? _onTapCancel : null,
+          child: AnimatedScale(
+            scale: _scale,
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeOut,
             child: Container(
-              width: SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11),
-              height: SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11),
-              decoration: BoxDecoration(
+              width: size,
+              height: size,
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    isEnabled
-                        ? color.withAlpha((0.9 * 255).toInt())
-                        : Colors.grey.withAlpha((0.9 * 255).toInt()),
-                    isEnabled
-                        ? color.withAlpha((0.6 * 255).toInt())
-                        : Colors.grey.withAlpha((0.6 * 255).toInt()),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isEnabled
-                        ? color.withAlpha((0.6 * 255).toInt())
-                        : Colors.grey.withAlpha((0.6 * 255).toInt()),
-                    blurRadius: 12,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
-              alignment: Alignment.center,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 12,
+                  // BACK "shadow rim"
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          base
+                            ..withAlpha(
+                              (0.4 * 255).toInt(),
+                            ),
+                          base
+                            ..withAlpha(
+                              (0.9 * 255).toInt(),
+                            ),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black38,
+                          offset: Offset(4, 6),
+                          blurRadius: 8,
+                        ),
+                      ],
                     ),
                   ),
+
+                  // GLOSS + bevel
+                  Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white
+                            ..withAlpha(
+                              (0.5 * 255).toInt(),
+                            ),
+                          base
+                            ..withAlpha(
+                              (0.8 * 255).toInt(),
+                            ),
+                        ],
+                        stops: const [0.0, 1.0],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white
+                            ..withAlpha(
+                              (0.6 * 255).toInt(),
+                            ),
+                          offset: const Offset(-2, -2),
+                          blurRadius: 6,
+                          spreadRadius: -2,
+                        ),
+                        BoxShadow(
+                          color: base
+                            ..withAlpha(
+                              (0.5 * 255).toInt(),
+                            ),
+                          offset: const Offset(3, 3),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // GLOSS REFLECTION
+                  // Positioned(
+                  //   top: 10,
+                  //   left: 5,
+                  //   child: ClipOval(
+                  //     child: BackdropFilter(
+                  //       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  //       child: Container(
+                  //         width: size * 0.6,
+                  //         height: size * 0.35,
+                  //         decoration: BoxDecoration(
+                  //           color: Colors.white.withOpacity(0.25),
+                  //           shape: BoxShape.circle,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+
+                  // LABEL
+                  Text(
+                    widget.label,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  // FULL OUTLINE STAR
                   if (isCompleted)
-                    const Positioned(
-                      right: 0,
-                      bottom: 0,
+                    Positioned.fill(
                       child: Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 16,
+                        Icons.star_border,
+                        size: size,
+                        color: Colors.amber
+                          ..withAlpha(
+                            (0.8 * 255).toInt(),
+                          ),
+                        shadows: [
+                          Shadow(
+                            color: Colors.amber
+                              ..withAlpha(
+                                (0.6 * 255).toInt(),
+                              ),
+                            blurRadius: 8,
+                          ),
+                        ],
                       ),
                     ),
                 ],
