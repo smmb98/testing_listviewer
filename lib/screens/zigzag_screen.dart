@@ -17,6 +17,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
   final SectionLoader loader = SectionLoader();
   final ScrollController controller = ScrollController();
   bool showBackToTop = false;
+  DateTime? _lastLoadTime;
 
   @override
   void initState() {
@@ -26,16 +27,28 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
   }
 
   void _onScroll() {
-    // Show back-to-top button logic
-    final shouldShow = controller.offset > MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Back-to-top button logic
+    final shouldShow = controller.offset > screenHeight;
     if (shouldShow != showBackToTop) {
       setState(() => showBackToTop = shouldShow);
     }
 
-    // Lazy loading logic
-    if (controller.position.pixels >=
-            controller.position.maxScrollExtent - 800 &&
-        !loader.isLoading) {
+    // Lazy loading logic using dynamic buffer (5x screen height from bottom)
+    final preloadOffset = 4 * screenHeight;
+    final currentOffset = controller.position.pixels;
+    final maxOffset = controller.position.maxScrollExtent;
+
+    // Add debounce check
+    final now = DateTime.now();
+    if (_lastLoadTime != null &&
+        now.difference(_lastLoadTime!).inMilliseconds < 2000) {
+      return;
+    }
+
+    if (currentOffset >= maxOffset - preloadOffset && !loader.isLoading) {
+      _lastLoadTime = now;
       loader.loadMoreSections();
     }
   }
