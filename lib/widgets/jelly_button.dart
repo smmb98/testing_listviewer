@@ -32,7 +32,7 @@ class _JellyButtonState extends State<JellyButton> {
 
   void _onTapUp(TapUpDetails details) {
     setState(() => _scale = 1.0);
-    widget.onPressed?.call();
+    widget.onPressed.call();
   }
 
   void _onTapCancel() => setState(() => _scale = 1.0);
@@ -47,10 +47,6 @@ class _JellyButtonState extends State<JellyButton> {
         final stageIndex = widget.stageIndex;
         final section = provider.sections[sectionIndex];
         final stage = section.stages[stageIndex];
-        // final isEnabled = StudyDataProvider.isStageEnabled(
-        //     widget.sectionIndex, widget.stageIndex);
-        // final isCompleted = StudyDataProvider.isStageCompleted(
-        //     widget.sectionIndex, widget.stageIndex);
 
         final Color base = stage.isEnabled ? widget.color : Colors.grey;
 
@@ -141,25 +137,6 @@ class _JellyButtonState extends State<JellyButton> {
                       ],
                     ),
                   ),
-
-                  // GLOSS REFLECTION
-                  // Positioned(
-                  //   top: 10,
-                  //   left: 5,
-                  //   child: ClipOval(
-                  //     child: BackdropFilter(
-                  //       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                  //       child: Container(
-                  //         width: size * 0.6,
-                  //         height: size * 0.35,
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.white.withOpacity(0.25),
-                  //           shape: BoxShape.circle,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
 
                   // LABEL
                   Text(

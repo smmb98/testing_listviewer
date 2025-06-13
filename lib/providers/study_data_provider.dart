@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/study/study_data_model.dart';
 import '../models/study/section_model.dart';
 import '../models/study/stage_model.dart';
@@ -48,32 +47,102 @@ class StudyDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Initialize default sections with stages
-  StudyDataModel _initializeDefaultSections() {
-    final sections = List.generate(
-      3,
-      (sectionIndex) {
-        final stages = List.generate(
-          5,
-          (stageIndex) => StageModel(
-            id: stageIndex + 1,
-            sectionId: sectionIndex + 1,
-            title: 'Stage ${stageIndex + 1}',
-            isEnabled: stageIndex == 0 && sectionIndex == 0,
-          ),
-        );
+  // // Initialize default sections with stages
+  // StudyDataModel 
+  //() {
+  //   final sections = List.generate(
+  //     3,
+  //     (sectionIndex) {
+  //       final stages = List.generate(
+  //         5,
+  //         (stageIndex) => StageModel(
+  //           id: stageIndex + 1,
+  //           sectionId: sectionIndex + 1,
+  //           title: 'Stage ${stageIndex + 1}',
+  //           isEnabled: stageIndex == 0 && sectionIndex == 0,
+  //         ),
+  //       );
 
-        return SectionModel(
-          id: sectionIndex + 1,
-          title: 'Section ${sectionIndex + 1}',
-          color: Colors.primaries[sectionIndex % Colors.primaries.length],
-          stages: stages,
-          isEnabled: sectionIndex == 0,
+  //       return SectionModel(
+  //         id: sectionIndex + 1,
+  //         title: 'Section ${sectionIndex + 1}',
+  //         color: Colors.primaries[sectionIndex % Colors.primaries.length],
+  //         stages: stages,
+  //         isEnabled: sectionIndex == 0,
+  //       );
+  //     },
+  //   );
+
+  //   return StudyDataModel(sections: sections);
+  // }
+
+  // Initialize default sections with stages (with lazy loading structure)
+  StudyDataModel _initializeDefaultSections() {
+    const int sectionCount = 10; // Simulating what _loadMoreInternal() does
+    const int stagesPerSection = 5;
+
+    final List<SectionModel> sections =
+        List.generate(sectionCount, (sectionIndex) {
+      final int sectionId = sectionIndex + 1;
+
+      final List<StageModel> stages =
+          List.generate(stagesPerSection, (stageIndex) {
+        return StageModel(
+          id: stageIndex + 1,
+          sectionId: sectionId,
+          title: 'Stage ${stageIndex + 1}',
+          isEnabled: sectionIndex == 0 &&
+              stageIndex == 0, // Only first stage of first section enabled
         );
-      },
-    );
+      });
+
+      return SectionModel(
+        id: sectionId,
+        title: 'Section $sectionId',
+        color: Colors.primaries[sectionIndex % Colors.primaries.length],
+        stages: stages,
+        isEnabled: sectionIndex == 0, // Only first section enabled
+      );
+    });
 
     return StudyDataModel(sections: sections);
+  }
+
+  // Soft reset - Reset all stages to initial state
+  Future<void> softReset() async {
+    if (_studyData == null) return;
+
+    final updatedSections = _studyData!.sections.map((section) {
+      final updatedStages = section.stages.map((stage) {
+        return stage.copyWith(
+          isEnabled: false,
+          isCompleted: false,
+        );
+      }).toList();
+
+      // Enable first stage of first section
+      if (section.id == 1) {
+        updatedStages[0] = updatedStages[0].copyWith(isEnabled: true);
+      }
+
+      return section.copyWith(
+        stages: updatedStages,
+        isEnabled: section.id == 1,
+        isCompleted: false,
+      );
+    }).toList();
+
+    _studyData = _studyData!.copyWith(sections: updatedSections);
+    await _repository.saveStudyData(_studyData!);
+    notifyListeners();
+  }
+
+  // Hard reset - Clear all data and start fresh
+  Future<void> hardReset() async {
+    await _repository.clearStudyData();
+    _studyData = _initializeDefaultSections();
+    await _repository.saveStudyData(_studyData!);
+    notifyListeners();
   }
 
   // Complete a stage and update both provider and persistence
@@ -129,13 +198,6 @@ class StudyDataProvider extends ChangeNotifier {
     _studyData = _studyData!.copyWith(sections: updatedSections);
 
     // Save changes to persistence
-    await _repository.saveStudyData(_studyData!);
-    notifyListeners();
-  }
-
-  // Reset progress to initial state
-  Future<void> resetProgress() async {
-    _studyData = _initializeDefaultSections();
     await _repository.saveStudyData(_studyData!);
     notifyListeners();
   }

@@ -7,6 +7,7 @@ import '../widgets/section_header.dart';
 import '../utils/responsive.dart';
 import '../widgets/shimmer_loading.dart';
 import '../widgets/back_to_top.dart';
+import '../widgets/settings_menu.dart';
 
 class ZigZagScreen extends StatefulWidget {
   const ZigZagScreen({super.key});
@@ -19,6 +20,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
   // final SectionLoader loader = SectionLoader();
   final ScrollController controller = ScrollController();
   bool showBackToTop = false;
+  Color _currentHeaderColor = Colors.blue;
   // DateTime? _lastLoadTime;
 
   @override
@@ -61,6 +63,20 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
     //   _lastLoadTime = now;
     //   // loader.loadMoreSections();
     // }
+
+    // Update header color based on current section
+    final provider = context.read<StudyDataProvider>();
+    if (provider.sections.isNotEmpty) {
+      final sectionIndex = (controller.offset / 300).floor();
+      if (sectionIndex >= 0 && sectionIndex < provider.sections.length) {
+        final newColor = provider.sections[sectionIndex].color;
+        if (_currentHeaderColor != newColor) {
+          setState(() {
+            _currentHeaderColor = newColor;
+          });
+        }
+      }
+    }
   }
 
   @override
@@ -77,6 +93,25 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: _currentHeaderColor,
+        title: const Text(
+          'Study Sections',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
+          ),
+        ],
+      ),
+      endDrawer: const SettingsMenu(),
       body: Consumer<StudyDataProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -122,7 +157,6 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
           );
         },
       ),
-//
       floatingActionButton: showBackToTop
           ? BackToTopButton(
               onPressed: () {
