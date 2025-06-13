@@ -48,9 +48,7 @@ class _SectionWidgetState extends State<SectionWidget> {
   Widget build(BuildContext context) {
     final List<Widget> buttons = [];
 
-    // final offsets = [0.0, 20.0, 30.0, 20.0, 0.0, -20.0, -30.0, -20.0];
     final offsets = [0.0, 25.0, 40.0, 25.0, 0.0, -25.0, -40.0, -25.0];
-    // final offsets = [0.0, 5.0, 8.0, 5.0, 0.0, -5.0, -8.0, -5.0]; // percentage
     final reverseOffsets = offsets.map((offset) => -offset).toList();
     final adjustedOffsets =
         (widget.sectionIndex % 2 == 1) ? reverseOffsets : offsets;

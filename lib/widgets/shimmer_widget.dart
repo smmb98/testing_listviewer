@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:testing_listviewer/utils/responsive.dart';
 
 class ShimmerSectionWidget extends StatelessWidget {
   final int sectionIndex;
@@ -12,8 +13,9 @@ class ShimmerSectionWidget extends StatelessWidget {
     final offsets = [0.0, 20.0, 30.0, 20.0, 0.0, -20.0, -30.0, -20.0];
     final reverseOffsets = offsets.map((offset) => -offset).toList();
     final adjustedOffsets = (sectionIndex % 2 == 1) ? reverseOffsets : offsets;
+    final size = SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11);
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 6; i++) {
       double offset = (i == 0 || i == 7)
           ? 0
           : adjustedOffsets[i % adjustedOffsets.length];
@@ -30,8 +32,8 @@ class ShimmerSectionWidget extends StatelessWidget {
                 baseColor: Colors.grey[800]!,
                 highlightColor: Colors.grey[700]!,
                 child: Container(
-                  width: 100,
-                  height: 100,
+                  width: size,
+                  height: size,
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,

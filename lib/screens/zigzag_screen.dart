@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:testing_listviewer/widgets/section_header_delegate.dart';
+import 'package:testing_listviewer/widgets/shimmer_widget.dart';
 import '../providers/study_data_provider.dart';
 import '../widgets/section_widget.dart';
 import '../widgets/section_header.dart';
@@ -20,7 +21,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
   // final SectionLoader loader = SectionLoader();
   final ScrollController controller = ScrollController();
   bool showBackToTop = false;
-  Color _currentHeaderColor = Colors.blue;
+  // Color _currentHeaderColor = Colors.blue;
   // DateTime? _lastLoadTime;
 
   @override
@@ -65,18 +66,18 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
     // }
 
     // Update header color based on current section
-    final provider = context.read<StudyDataProvider>();
-    if (provider.sections.isNotEmpty) {
-      final sectionIndex = (controller.offset / 300).floor();
-      if (sectionIndex >= 0 && sectionIndex < provider.sections.length) {
-        final newColor = provider.sections[sectionIndex].color;
-        if (_currentHeaderColor != newColor) {
-          setState(() {
-            _currentHeaderColor = newColor;
-          });
-        }
-      }
-    }
+    // final provider = context.read<StudyDataProvider>();
+    // if (provider.sections.isNotEmpty) {
+    //   final sectionIndex = (controller.offset / 300).floor();
+    //   if (sectionIndex >= 0 && sectionIndex < provider.sections.length) {
+    //     final newColor = provider.sections[sectionIndex].color;
+    //     if (_currentHeaderColor != newColor) {
+    //       setState(() {
+    //         _currentHeaderColor = newColor;
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   @override
@@ -94,7 +95,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: _currentHeaderColor,
+        // backgroundColor: _currentHeaderColor,
         title: const Text(
           'Study Sections',
           style: TextStyle(color: Colors.white),
@@ -115,7 +116,20 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
       body: Consumer<StudyDataProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const ShimmerLoading();
+            print('Loading sections... ${provider.isLoading}');
+            // return const CustomScrollView(
+            //   slivers: [
+            //     SliverToBoxAdapter(
+            //       child: ShimmerSectionWidget(
+            //         sectionIndex: 0,
+            //       ),
+            //     ),
+            //   ],
+            // );
+            return const ShimmerSectionWidget(
+              sectionIndex: 0,
+            );
+            // return const ShimmerLoading();
           }
 
           return CustomScrollView(

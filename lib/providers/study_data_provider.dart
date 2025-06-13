@@ -25,6 +25,7 @@ class StudyDataProvider extends ChangeNotifier {
   // Initialize data on app start
   Future<void> initialize() async {
     _isLoading = true;
+    await Future.delayed(const Duration(seconds: 3));
     notifyListeners();
 
     try {
@@ -47,38 +48,9 @@ class StudyDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // // Initialize default sections with stages
-  // StudyDataModel 
-  //() {
-  //   final sections = List.generate(
-  //     3,
-  //     (sectionIndex) {
-  //       final stages = List.generate(
-  //         5,
-  //         (stageIndex) => StageModel(
-  //           id: stageIndex + 1,
-  //           sectionId: sectionIndex + 1,
-  //           title: 'Stage ${stageIndex + 1}',
-  //           isEnabled: stageIndex == 0 && sectionIndex == 0,
-  //         ),
-  //       );
-
-  //       return SectionModel(
-  //         id: sectionIndex + 1,
-  //         title: 'Section ${sectionIndex + 1}',
-  //         color: Colors.primaries[sectionIndex % Colors.primaries.length],
-  //         stages: stages,
-  //         isEnabled: sectionIndex == 0,
-  //       );
-  //     },
-  //   );
-
-  //   return StudyDataModel(sections: sections);
-  // }
-
   // Initialize default sections with stages (with lazy loading structure)
   StudyDataModel _initializeDefaultSections() {
-    const int sectionCount = 10; // Simulating what _loadMoreInternal() does
+    const int sectionCount = 10;
     const int stagesPerSection = 5;
 
     final List<SectionModel> sections =
@@ -111,6 +83,7 @@ class StudyDataProvider extends ChangeNotifier {
   // Soft reset - Reset all stages to initial state
   Future<void> softReset() async {
     if (_studyData == null) return;
+    _isLoading = true;
 
     final updatedSections = _studyData!.sections.map((section) {
       final updatedStages = section.stages.map((stage) {
@@ -134,14 +107,20 @@ class StudyDataProvider extends ChangeNotifier {
 
     _studyData = _studyData!.copyWith(sections: updatedSections);
     await _repository.saveStudyData(_studyData!);
+
+    _isLoading = false;
     notifyListeners();
   }
 
   // Hard reset - Clear all data and start fresh
   Future<void> hardReset() async {
+    _isLoading = true;
+
     await _repository.clearStudyData();
     _studyData = _initializeDefaultSections();
     await _repository.saveStudyData(_studyData!);
+
+    _isLoading = false;
     notifyListeners();
   }
 
