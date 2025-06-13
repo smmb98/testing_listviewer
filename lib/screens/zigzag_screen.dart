@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:testing_listviewer/widgets/section_header_delegate.dart';
 import 'package:testing_listviewer/widgets/shimmer_widget.dart';
@@ -17,16 +18,14 @@ class ZigZagScreen extends StatefulWidget {
 }
 
 class _ZigZagScreenState extends State<ZigZagScreen> {
-  // final SectionLoader loader = SectionLoader();
   final ScrollController controller = ScrollController();
   bool showBackToTop = false;
-  // Color _currentHeaderColor = Colors.blue;
   // DateTime? _lastLoadTime;
+  int? _currentPinnedIndex;
 
   @override
   void initState() {
     super.initState();
-    // loader.loadInitialSections();
     controller.addListener(_onScroll);
   }
 
@@ -90,11 +89,10 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
     final headerHeight = SizeConfig.hp(
       SizeConfig.isLandscape(context) ? 20 : 10,
     );
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.black,
         title: const Text(
           'Study Sections',
           style: TextStyle(color: Colors.white),
@@ -115,20 +113,9 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
       body: Consumer<StudyDataProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            print('Loading sections... ${provider.isLoading}');
-            // return const CustomScrollView(
-            //   slivers: [
-            //     SliverToBoxAdapter(
-            //       child: ShimmerSectionWidget(
-            //         sectionIndex: 0,
-            //       ),
-            //     ),
-            //   ],
-            // );
             return const ShimmerSectionWidget(
               sectionIndex: 0,
             );
-            // return const ShimmerLoading();
           }
 
           return CustomScrollView(
@@ -143,12 +130,18 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: SectionHeaderDelegate(
+                        sectionIndex: index,
                         minHeight: headerHeight,
                         maxHeight: headerHeight,
                         child: SectionHeader(
                           section: section,
                           isLandscape: SizeConfig.isLandscape(context),
                         ),
+                        onPinned: () {
+                          if (_currentPinnedIndex == index) return;
+                          _currentPinnedIndex = index;
+                          HapticFeedback.heavyImpact();
+                        },
                       ),
                     ),
                     SliverToBoxAdapter(
