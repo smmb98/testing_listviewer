@@ -104,7 +104,8 @@ class SettingsMenu extends StatelessWidget {
 
   Future<void> _importData(BuildContext context) async {
     try {
-      // Show confirmation dialog
+      final provider = context.read<StudyDataProvider>(); // <-- Move this up
+
       final shouldImport = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -127,7 +128,6 @@ class SettingsMenu extends StatelessWidget {
 
       if (shouldImport != true) return;
 
-      // Pick the file
       const typeGroup = XTypeGroup(
         label: 'JSON',
         extensions: ['json'],
@@ -136,22 +136,17 @@ class SettingsMenu extends StatelessWidget {
 
       if (file == null) return;
 
-      // Read and validate the file
       final jsonString = await File(file.path).readAsString();
       final json = jsonDecode(jsonString);
 
-      // Validate the data structure
       try {
         final importedData = StudyDataModel.fromJson(json);
 
-        // Additional validation if needed
         if (importedData.sections.isEmpty) {
           throw Exception('Imported data has no sections');
         }
 
-        // Update the provider
-        final provider = context.read<StudyDataProvider>();
-        await provider.importData(importedData);
+        await provider.importData(importedData); // now safe to call
 
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
