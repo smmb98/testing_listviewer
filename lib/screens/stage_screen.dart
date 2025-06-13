@@ -1,60 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/button_state_provider.dart';
+import '../providers/study_data_provider.dart';
 
 class StageScreen extends StatelessWidget {
   final int sectionIndex;
-  final int buttonIndex;
+  final int stageIndex;
 
   const StageScreen({
     super.key,
     required this.sectionIndex,
-    required this.buttonIndex,
+    required this.stageIndex,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Stage ${buttonIndex + 1} - Section ${sectionIndex + 1}'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Section ${sectionIndex + 1} - Stage ${buttonIndex + 1}',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 20),
-            Row(
+    return Consumer<StudyDataProvider>(
+      builder: (context, provider, child) {
+        final section = provider.sections[sectionIndex];
+        final stage = section.stages[stageIndex];
+
+        return Scaffold(
+          appBar: AppBar(
+            title:
+                Text('Stage ${stageIndex + 1} - Section ${sectionIndex + 1}'),
+          ),
+          body: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                Text(
+                  'Section ${section.id} - ${stage.title}',
+                  style: const TextStyle(fontSize: 24),
                 ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Mark button as completed and enable next button
-                    context.read<ButtonStateProvider>().completeButton(
-                      sectionIndex,
-                      buttonIndex,
-                    );
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Save'),
-                ),
+                const SizedBox(height: 20),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      provider.completeStage(section.id, stage.id);
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Complete Stage'),
+                  ),
+                ])
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

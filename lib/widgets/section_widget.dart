@@ -1,8 +1,8 @@
 import 'package:testing_listviewer/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/section_model.dart';
-import '../providers/button_state_provider.dart';
+import '../models/study/section_model.dart';
+import '../providers/study_data_provider.dart';
 import 'jelly_button.dart';
 import '../screens/stage_screen.dart';
 
@@ -24,21 +24,21 @@ class _SectionWidgetState extends State<SectionWidget> {
   @override
   void initState() {
     super.initState();
-    // Register the section's button count with the provider
+    // Register the section's stage count with the provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ButtonStateProvider>().setSectionButtonCount(
+      context.read<StudyDataProvider>().setSectionStageCount(
             widget.sectionIndex,
-            widget.section.buttonCount,
+            widget.section.stages.length,
           );
     });
   }
 
-  void _navigateToStage(BuildContext context, int buttonIndex) {
+  void _navigateToStage(BuildContext context, int stageIndex) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => StageScreen(
           sectionIndex: widget.sectionIndex,
-          buttonIndex: buttonIndex,
+          stageIndex: stageIndex,
         ),
       ),
     );
@@ -55,8 +55,8 @@ class _SectionWidgetState extends State<SectionWidget> {
     final adjustedOffsets =
         (widget.sectionIndex % 2 == 1) ? reverseOffsets : offsets;
 
-    for (int i = 0; i < widget.section.buttonCount; i++) {
-      double offsetPercent = (i == 0 || i == widget.section.buttonCount - 1)
+    for (int i = 0; i < widget.section.stages.length; i++) {
+      double offsetPercent = (i == 0 || i == widget.section.stages.length - 1)
           ? 0
           : adjustedOffsets[i % adjustedOffsets.length];
 
@@ -71,10 +71,11 @@ class _SectionWidgetState extends State<SectionWidget> {
           child: Align(
             alignment: Alignment(offsetPercent / 100, 0),
             child: JellyButton(
-              label: 'Item ${i + 1}',
+              // label: 'Item ${i + 1}',
+              label: widget.section.stages[i].title,
               color: widget.section.color,
               sectionIndex: widget.sectionIndex,
-              buttonIndex: i,
+              stageIndex: i,
               onPressed: () => _navigateToStage(context, i),
             ),
           ),
@@ -145,7 +146,7 @@ class _SectionWidgetState extends State<SectionWidget> {
         border: Border.all(color: Colors.red, width: 1),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 0.0),
+        padding: const EdgeInsets.symmetric(vertical: 0.0),
         child: Column(children: buttons),
       ),
     );

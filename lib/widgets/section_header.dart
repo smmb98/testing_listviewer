@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/section_model.dart';
+import '../models/study/section_model.dart';
 import '../utils/responsive.dart';
 
 class SectionHeader extends StatelessWidget {

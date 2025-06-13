@@ -1,13 +1,26 @@
 import 'package:testing_listviewer/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/zigzag_screen.dart';
-import 'providers/button_state_provider.dart';
+import 'providers/study_data_provider.dart';
+import 'repositories/shared_prefs_study_repository.dart';
 
-void main() => runApp(const ZigZagApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final repository = SharedPrefsStudyRepository(prefs);
+
+  runApp(ZigZagApp(repository: repository));
+}
 
 class ZigZagApp extends StatelessWidget {
-  const ZigZagApp({super.key});
+  final SharedPrefsStudyRepository repository;
+
+  const ZigZagApp({
+    super.key,
+    required this.repository,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +28,13 @@ class ZigZagApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ButtonStateProvider()),
+        ChangeNotifierProvider(
+          create: (_) => StudyDataProvider(repository)..initialize(),
+        ),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const ZigZagScreen(),
+        home: ZigZagScreen(),
       ),
     );
   }

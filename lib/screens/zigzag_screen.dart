@@ -1,10 +1,12 @@
-import 'package:testing_listviewer/widgets/shimmer_widget.dart';
 import 'package:flutter/material.dart';
-import '../providers/section_loader.dart';
+import 'package:provider/provider.dart';
+import 'package:testing_listviewer/widgets/section_header_delegate.dart';
+import '../providers/study_data_provider.dart';
 import '../widgets/section_widget.dart';
-import '../utils/responsive.dart';
 import '../widgets/section_header.dart';
-import '../widgets/section_header_delegate.dart';
+import '../utils/responsive.dart';
+import '../widgets/shimmer_loading.dart';
+import '../widgets/back_to_top.dart';
 
 class ZigZagScreen extends StatefulWidget {
   const ZigZagScreen({super.key});
@@ -14,43 +16,51 @@ class ZigZagScreen extends StatefulWidget {
 }
 
 class _ZigZagScreenState extends State<ZigZagScreen> {
-  final SectionLoader loader = SectionLoader();
+  // final SectionLoader loader = SectionLoader();
   final ScrollController controller = ScrollController();
   bool showBackToTop = false;
-  DateTime? _lastLoadTime;
+  // DateTime? _lastLoadTime;
 
   @override
   void initState() {
     super.initState();
-    loader.loadInitialSections();
+    // loader.loadInitialSections();
     controller.addListener(_onScroll);
   }
 
   void _onScroll() {
-    final screenHeight = MediaQuery.of(context).size.height;
+    //final screenHeight = MediaQuery.of(context).size.height;
 
-    // Back-to-top button logic
-    final shouldShow = controller.offset > screenHeight;
-    if (shouldShow != showBackToTop) {
-      setState(() => showBackToTop = shouldShow);
+    // // Back-to-top button logic
+    // final shouldShow = controller.offset > screenHeight;
+    // if (shouldShow != showBackToTop) {
+    //   setState(() => showBackToTop = shouldShow);
+    if (controller.offset > 200 && !showBackToTop) {
+      setState(() {
+        showBackToTop = true;
+      });
+    } else if (controller.offset <= 200 && showBackToTop) {
+      setState(() {
+        showBackToTop = false;
+      });
     }
 
-    // Lazy loading logic using dynamic buffer (5x screen height from bottom)
-    final preloadOffset = 4 * screenHeight;
-    final currentOffset = controller.position.pixels;
-    final maxOffset = controller.position.maxScrollExtent;
+    // // Lazy loading logic using dynamic buffer (5x screen height from bottom)
+    // final preloadOffset = 4 * screenHeight;
+    // final currentOffset = controller.position.pixels;
+    // final maxOffset = controller.position.maxScrollExtent;
 
-    // Add debounce check
-    final now = DateTime.now();
-    if (_lastLoadTime != null &&
-        now.difference(_lastLoadTime!).inMilliseconds < 2000) {
-      return;
-    }
+    // // Add debounce check
+    // final now = DateTime.now();
+    // if (_lastLoadTime != null &&
+    //     now.difference(_lastLoadTime!).inMilliseconds < 2000) {
+    //   return;
+    // }
 
-    if (currentOffset >= maxOffset - preloadOffset && !loader.isLoading) {
-      _lastLoadTime = now;
-      // loader.loadMoreSections();
-    }
+    // if (currentOffset >= maxOffset - preloadOffset && !loader.isLoading) {
+    //   _lastLoadTime = now;
+    //   // loader.loadMoreSections();
+    // }
   }
 
   @override
@@ -67,28 +77,19 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      // appBar: AppBar(title: const Text("Zig-Zag Viewer")),
-      floatingActionButton: showBackToTop
-          ? FloatingActionButton(
-              onPressed: () {
-                controller.animateTo(
-                  0,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                );
-              },
-              child: const Icon(Icons.arrow_upward),
-            )
-          : null,
-      body: AnimatedBuilder(
-        animation: loader,
-        builder: (context, _) {
+      body: Consumer<StudyDataProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const ShimmerLoading();
+          }
+
           return CustomScrollView(
             controller: controller,
             slivers: [
-              ...loader.sections.asMap().entries.map((entry) {
+              ...provider.sections.asMap().entries.map((entry) {
                 final index = entry.key;
                 final section = entry.value;
+
                 return SliverMainAxisGroup(
                   slivers: [
                     SliverPersistentHeader(
@@ -111,16 +112,28 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
                   ],
                 );
               }).toList(),
-              if (loader.hasMore)
-                SliverToBoxAdapter(
-                  child: ShimmerSectionWidget(
-                    sectionIndex: loader.sections.length,
-                  ),
-                ),
+              // if (provider.hasMore)
+              //   SliverToBoxAdapter(
+              //     child: ShimmerSectionWidget(
+              //       sectionIndex: provider.sections.length,
+              //     ),
+              //   ),
             ],
           );
         },
       ),
+//
+      floatingActionButton: showBackToTop
+          ? BackToTopButton(
+              onPressed: () {
+                controller.animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
+              },
+            )
+          : null,
     );
   }
 }

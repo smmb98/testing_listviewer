@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/button_state_provider.dart';
-import 'package:testing_listviewer/utils/responsive.dart';
+import '../providers/study_data_provider.dart';
+import '../utils/responsive.dart';
 
 class JellyButton extends StatefulWidget {
   final String label;
   final Color color;
   final int sectionIndex;
-  final int buttonIndex;
-  final VoidCallback? onPressed;
+  final int stageIndex;
+  final VoidCallback onPressed;
 
   const JellyButton({
     super.key,
     required this.label,
     required this.color,
     required this.sectionIndex,
-    required this.buttonIndex,
-    this.onPressed,
+    required this.stageIndex,
+    required this.onPressed,
   });
 
   @override
@@ -41,19 +41,23 @@ class _JellyButtonState extends State<JellyButton> {
   Widget build(BuildContext context) {
     final size = SizeConfig.hp(SizeConfig.isLandscape(context) ? 20 : 11);
 
-    return Consumer<ButtonStateProvider>(
-      builder: (context, buttonStateProvider, _) {
-        final isEnabled = buttonStateProvider.isButtonEnabled(
-            widget.sectionIndex, widget.buttonIndex);
-        final isCompleted = buttonStateProvider.isButtonCompleted(
-            widget.sectionIndex, widget.buttonIndex);
+    return Consumer<StudyDataProvider>(
+      builder: (context, provider, child) {
+        final sectionIndex = widget.sectionIndex;
+        final stageIndex = widget.stageIndex;
+        final section = provider.sections[sectionIndex];
+        final stage = section.stages[stageIndex];
+        // final isEnabled = StudyDataProvider.isStageEnabled(
+        //     widget.sectionIndex, widget.stageIndex);
+        // final isCompleted = StudyDataProvider.isStageCompleted(
+        //     widget.sectionIndex, widget.stageIndex);
 
-        final Color base = isEnabled ? widget.color : Colors.grey;
+        final Color base = stage.isEnabled ? widget.color : Colors.grey;
 
         return GestureDetector(
-          onTapDown: isEnabled ? _onTapDown : null,
-          onTapUp: isEnabled ? _onTapUp : null,
-          onTapCancel: isEnabled ? _onTapCancel : null,
+          onTapDown: stage.isEnabled ? _onTapDown : null,
+          onTapUp: stage.isEnabled ? _onTapUp : null,
+          onTapCancel: stage.isEnabled ? _onTapCancel : null,
           child: AnimatedScale(
             scale: _scale,
             duration: const Duration(milliseconds: 120),
@@ -168,7 +172,7 @@ class _JellyButtonState extends State<JellyButton> {
                   ),
 
                   // FULL OUTLINE STAR
-                  if (isCompleted)
+                  if (stage.isCompleted)
                     Positioned.fill(
                       child: Icon(
                         Icons.star_border,
