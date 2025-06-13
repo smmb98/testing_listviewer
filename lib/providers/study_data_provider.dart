@@ -180,4 +180,10 @@ class StudyDataProvider extends ChangeNotifier {
     await _repository.saveStudyData(_studyData!);
     notifyListeners();
   }
+
+  Future<void> importData(StudyDataModel newData) async {
+    _studyData = newData;
+    await _repository.saveStudyData(newData);
+    notifyListeners();
+  }
 }

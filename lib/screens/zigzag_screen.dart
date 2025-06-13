@@ -6,7 +6,6 @@ import '../providers/study_data_provider.dart';
 import '../widgets/section_widget.dart';
 import '../widgets/section_header.dart';
 import '../utils/responsive.dart';
-import '../widgets/shimmer_loading.dart';
 import '../widgets/back_to_top.dart';
 import '../widgets/settings_menu.dart';
 
@@ -95,7 +94,7 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        // backgroundColor: _currentHeaderColor,
+        backgroundColor: Colors.grey,
         title: const Text(
           'Study Sections',
           style: TextStyle(color: Colors.white),
