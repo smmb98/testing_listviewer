@@ -2,7 +2,7 @@ import 'package:testing_listviewer/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/zigzag_screen.dart';
+import 'screens/progress_path_screen.dart';
 import 'providers/study_data_provider.dart';
 import 'repositories/shared_prefs_study_repository.dart';
 
@@ -34,7 +34,7 @@ class ZigZagApp extends StatelessWidget {
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: ZigZagScreen(),
+        home: ProgressPathScreen(),
       ),
     );
   }

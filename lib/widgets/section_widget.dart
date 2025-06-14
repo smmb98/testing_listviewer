@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/study/section_model.dart';
 import '../providers/study_data_provider.dart';
-import 'jelly_button.dart';
+import 'stage_button.dart';
 import '../screens/stage_screen.dart';
 
 class SectionWidget extends StatefulWidget {
@@ -68,7 +68,7 @@ class _SectionWidgetState extends State<SectionWidget> {
           padding: EdgeInsets.symmetric(vertical: SizeConfig.hp(2)),
           child: Align(
             alignment: Alignment(offsetPercent / 100, 0),
-            child: JellyButton(
+            child: StageButton(
               // label: 'Item ${i + 1}',
               label: widget.section.stages[i].title,
               color: widget.section.color,

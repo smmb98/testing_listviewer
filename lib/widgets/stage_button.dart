@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import '../providers/study_data_provider.dart';
 import '../utils/responsive.dart';
 
-class JellyButton extends StatefulWidget {
+class StageButton extends StatefulWidget {
   final String label;
   final Color color;
   final int sectionIndex;
   final int stageIndex;
   final VoidCallback onPressed;
 
-  const JellyButton({
+  const StageButton({
     super.key,
     required this.label,
     required this.color,
@@ -20,10 +20,10 @@ class JellyButton extends StatefulWidget {
   });
 
   @override
-  State<JellyButton> createState() => _JellyButtonState();
+  State<StageButton> createState() => _StageButtonState();
 }
 
-class _JellyButtonState extends State<JellyButton> {
+class _StageButtonState extends State<StageButton> {
   double _scale = 1.0;
 
   void _onTapDown(TapDownDetails details) {

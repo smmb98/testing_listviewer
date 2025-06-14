@@ -10,17 +10,16 @@ import '../utils/responsive.dart';
 import '../widgets/back_to_top.dart';
 import '../widgets/settings_menu.dart';
 
-class ZigZagScreen extends StatefulWidget {
-  const ZigZagScreen({super.key});
+class ProgressPathScreen extends StatefulWidget {
+  const ProgressPathScreen({super.key});
 
   @override
-  State<ZigZagScreen> createState() => _ZigZagScreenState();
+  State<ProgressPathScreen> createState() => _ProgressPathScreenState();
 }
 
-class _ZigZagScreenState extends State<ZigZagScreen> {
+class _ProgressPathScreenState extends State<ProgressPathScreen> {
   final ScrollController controller = ScrollController();
   bool showBackToTop = false;
-  // DateTime? _lastLoadTime;
   int? _currentPinnedIndex;
 
   @override
@@ -30,12 +29,6 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
   }
 
   void _onScroll() {
-    //final screenHeight = MediaQuery.of(context).size.height;
-
-    // // Back-to-top button logic
-    // final shouldShow = controller.offset > screenHeight;
-    // if (shouldShow != showBackToTop) {
-    //   setState(() => showBackToTop = shouldShow);
     if (controller.offset > 200 && !showBackToTop) {
       setState(() {
         showBackToTop = true;
@@ -45,37 +38,6 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
         showBackToTop = false;
       });
     }
-
-    // // Lazy loading logic using dynamic buffer (5x screen height from bottom)
-    // final preloadOffset = 4 * screenHeight;
-    // final currentOffset = controller.position.pixels;
-    // final maxOffset = controller.position.maxScrollExtent;
-
-    // // Add debounce check
-    // final now = DateTime.now();
-    // if (_lastLoadTime != null &&
-    //     now.difference(_lastLoadTime!).inMilliseconds < 2000) {
-    //   return;
-    // }
-
-    // if (currentOffset >= maxOffset - preloadOffset && !loader.isLoading) {
-    //   _lastLoadTime = now;
-    //   // loader.loadMoreSections();
-    // }
-
-    // Update header color based on current section
-    // final provider = context.read<StudyDataProvider>();
-    // if (provider.sections.isNotEmpty) {
-    //   final sectionIndex = (controller.offset / 300).floor();
-    //   if (sectionIndex >= 0 && sectionIndex < provider.sections.length) {
-    //     final newColor = provider.sections[sectionIndex].color;
-    //     if (_currentHeaderColor != newColor) {
-    //       setState(() {
-    //         _currentHeaderColor = newColor;
-    //       });
-    //     }
-    //   }
-    // }
   }
 
   @override
@@ -153,12 +115,6 @@ class _ZigZagScreenState extends State<ZigZagScreen> {
                   ],
                 );
               }).toList(),
-              // if (provider.hasMore)
-              //   SliverToBoxAdapter(
-              //     child: ShimmerSectionWidget(
-              //       sectionIndex: provider.sections.length,
-              //     ),
-              //   ),
             ],
           );
         },
