@@ -61,9 +61,9 @@ class _SectionWidgetState extends State<SectionWidget> {
       bool isMaxOffset = offsetPercent.abs() == 40.0;
 
       Widget buttonContent = Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue, width: 1),
-        ),
+        // decoration: BoxDecoration(
+        //   border: Border.all(color: Colors.blue, width: 1),
+        // ),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: SizeConfig.hp(2)),
           child: Align(
@@ -139,14 +139,9 @@ class _SectionWidgetState extends State<SectionWidget> {
       buttons.add(buttonContent);
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.red, width: 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 0.0),
-        child: Column(children: buttons),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0.0),
+      child: Column(children: buttons),
     );
   }
 }

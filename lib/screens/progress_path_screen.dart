@@ -114,7 +114,7 @@ class _ProgressPathScreenState extends State<ProgressPathScreen> {
                     ),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           );
         },

@@ -21,9 +21,9 @@ class ShimmerSectionWidget extends StatelessWidget {
           : adjustedOffsets[i % adjustedOffsets.length];
       buttons.add(
         Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.blue, width: 1),
-          ),
+          // decoration: BoxDecoration(
+          //   border: Border.all(color: Colors.blue, width: 1),
+          // ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: Align(

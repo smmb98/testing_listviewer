@@ -17,7 +17,6 @@ class SectionHeader extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: section.color,
-        border: Border.all(color: Colors.green, width: 1),
       ),
       alignment: Alignment.center,
       child: Text(
